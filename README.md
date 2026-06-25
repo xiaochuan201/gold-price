@@ -21,6 +21,12 @@
   - `BANK_SPREAD`（银行金条点差，默认 10 元/克）
   - `JEWELRY_LOW` / `JEWELRY_HIGH`（金饰品牌溢价，默认 150~250 元/克）
 
+### 💱 汇率换算（`tools/forex.html`）
+- 输入金额，在任意两种货币间即时换算，支持一键互换（⇅）
+- 附「常用汇率参考」（1 单位换算成人民币/美元/欧元/日元等）
+- 内置常用币种：CNY/USD/EUR/JPY/HKD/GBP/KRW/THB/SGD/AUD/TWD/CAD/MYR/CHF（要增减改文件里的 `CURRENCIES` / `QUICK` 数组）
+- 数据来源：`https://open.er-api.com/v6/latest/USD`（中间价，每日更新一次）。换算逻辑：以 USD 为基准，`A→B = 金额 × rate[B] / rate[A]`
+
 ---
 
 ## 目录结构
@@ -39,6 +45,7 @@ gold-price/
 │   └── common.js           # 共享函数：fmt() / jget() / makeCooldownButton()
 └── tools/
     ├── gold.html           # 每日金价工具
+    ├── forex.html          # 汇率换算工具
     └── _template.html      # 新功能模板（加功能时复制它）
 ```
 

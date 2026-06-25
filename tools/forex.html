@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#14141f">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>汇率换算 · 百宝箱</title>
+<link rel="icon" type="image/svg+xml" href="../icon.svg">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="appbar">
+    <a class="back" href="../index.html">← 返回</a>
+    <h1>💱 汇率换算</h1>
+    <div class="right">
+      <button class="iconbtn" id="refreshBtn">↻</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label">从</div>
+    <select class="cur" id="from"></select>
+    <input class="amount" id="amt" type="number" inputmode="decimal" value="100" placeholder="输入金额">
+  </div>
+
+  <div class="swap-wrap"><button class="swapbtn" id="swap" aria-label="交换货币">⇅</button></div>
+
+  <div class="card gold">
+    <div class="label">到</div>
+    <select class="cur" id="to"></select>
+    <div class="amount result" id="result">—</div>
+  </div>
+
+  <div class="sub rateline" id="rateline"></div>
+
+  <div class="section-title">常用汇率参考</div>
+  <div class="grid" id="quick"></div>
+
+  <div class="footer" id="footer">汇率加载中…</div>
+
+<script src="../assets/common.js"></script>
+<script>
+// [代码, 中文名, 旗帜]
+const CURRENCIES = [
+  ['CNY','人民币','🇨🇳'], ['USD','美元','🇺🇸'], ['EUR','欧元','🇪🇺'],
+  ['JPY','日元','🇯🇵'], ['HKD','港币','🇭🇰'], ['GBP','英镑','🇬🇧'],
+  ['KRW','韩元','🇰🇷'], ['THB','泰铢','🇹🇭'], ['SGD','新加坡元','🇸🇬'],
+  ['AUD','澳元','🇦🇺'], ['TWD','新台币','🇹🇼'], ['CAD','加元','🇨🇦'],
+  ['MYR','林吉特','🇲🇾'], ['CHF','瑞郎','🇨🇭'],
+];
+const NAME = Object.fromEntries(CURRENCIES.map(c => [c[0], c[1]]));
+const FLAG = Object.fromEntries(CURRENCIES.map(c => [c[0], c[2]]));
+// 参考栏展示的目标币种
+const QUICK = ['CNY','USD','EUR','JPY','HKD','GBP','KRW','THB'];
+
+let rates = null;  // 相对 USD 的汇率表
+
+// 填充两个下拉框
+function fillSelects() {
+  const opts = CURRENCIES.map(([c, n, f]) => `<option value="${c}">${f} ${c} · ${n}</option>`).join('');
+  const from = document.getElementById('from'), to = document.getElementById('to');
+  from.innerHTML = opts; to.innerHTML = opts;
+  from.value = 'USD'; to.value = 'CNY';
+}
+
+// A→B：amount × rate[B] / rate[A]（rate 以 USD 为基准）
+function convert(amount, from, to) {
+  return amount * rates[to] / rates[from];
+}
+
+function render() {
+  if (!rates) return;
+  const from = document.getElementById('from').value;
+  const to = document.getElementById('to').value;
+  const amt = parseFloat(document.getElementById('amt').value) || 0;
+
+  document.getElementById('result').textContent = fmt(convert(amt, from, to));
+  document.getElementById('rateline').textContent =
+    '1 ' + from + ' = ' + fmt(convert(1, from, to), 4) + ' ' + to;
+
+  // 常用参考：1 [from] 等于各币种
+  document.getElementById('quick').innerHTML = QUICK
+    .filter(c => c !== from)
+    .map(c => `<div class="card"><div class="label">${FLAG[c]} 1 ${from} → ${c}</div>`
+            + `<div class="value">${fmt(convert(1, from, c), 4)}</div></div>`)
+    .join('');
+}
+
+async function load() {
+  try {
+    const data = await jget('https://open.er-api.com/v6/latest/USD');
+    rates = data.rates;
+    render();
+    document.getElementById('footer').innerHTML =
+      '汇率更新：' + (data.time_last_update_utc || '') + '（每日更新一次）<br>'
+      + '数据来源 open.er-api.com · 中间价，仅供参考';
+  } catch (e) {
+    document.getElementById('footer').innerHTML = '<span class="err">汇率加载失败，请重试</span><br>' + e;
+  }
+}
+
+fillSelects();
+['from','to','amt'].forEach(id =>
+  document.getElementById(id).addEventListener('input', render));
+document.getElementById('swap').addEventListener('click', () => {
+  const f = document.getElementById('from'), t = document.getElementById('to');
+  [f.value, t.value] = [t.value, f.value];
+  render();
+});
+makeCooldownButton('refreshBtn', load, 5);
+load();
+document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+</script>
+</body>
+</html>
