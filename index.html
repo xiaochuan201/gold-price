@@ -85,24 +85,12 @@
     <div class="value" id="gCny"><span class="loading pulse">加载中…</span></div>
   </div>
 
-  <div class="grid">
-    <div class="card">
-      <div class="label">美元 → 人民币</div>
-      <div class="value" id="fx"><span class="loading pulse">…</span></div>
-    </div>
-    <div class="card">
-      <div class="label">黄金 · 美元/克</div>
-      <div class="value" id="gUsd"><span class="loading pulse">…</span></div>
-    </div>
+  <div class="card">
+    <div class="label">美元 → 人民币</div>
+    <div class="value" id="fx"><span class="loading pulse">…</span></div>
   </div>
 
   <div class="section-title">国内金价 · 参考<span class="badge">估算</span></div>
-
-  <div class="card">
-    <div class="label">国内基准 · 上海金 Au99.99 ≈ 人民币/克</div>
-    <div class="value" id="sge"><span class="loading pulse">…</span></div>
-    <div class="sub">由国际现货价 × 汇率折算，与上海金交易所实时价基本一致（±几元）</div>
-  </div>
 
   <div class="card">
     <div class="label">银行投资金条 约</div>
@@ -148,11 +136,9 @@ async function load() {
     document.getElementById('ozUsd').innerHTML = '$' + fmt(ozUsd) + '<span class="unit">/oz</span>';
     document.getElementById('gCny').innerHTML  = '¥' + fmt(gCny) + '<span class="unit">/g</span>';
     document.getElementById('fx').innerHTML    = fmt(rate, 4);
-    document.getElementById('gUsd').innerHTML  = '$' + fmt(gUsd) + '<span class="unit">/g</span>';
 
     // 国内参考价：以国际折算的人民币克价为基准
     const base = gCny;
-    document.getElementById('sge').innerHTML     = '¥' + fmt(base) + '<span class="unit">/g</span>';
     document.getElementById('bankBar').innerHTML = '¥' + fmt(base + BANK_SPREAD, 0) + '<span class="unit">/g</span>';
     document.getElementById('jewelry').innerHTML = '¥' + fmt(base + JEWELRY_LOW, 0) + ' ~ ' + fmt(base + JEWELRY_HIGH, 0) + '<span class="unit">/g</span>';
 
