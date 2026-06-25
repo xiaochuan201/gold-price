@@ -45,6 +45,8 @@
     transition: transform .4s;
   }
   .refresh.spin { transform: rotate(360deg); }
+  .refresh:disabled { opacity: .45; cursor: default; }
+  .refresh.cooling { font-size: 13px; font-weight: 600; }
   .card {
     background: var(--card);
     border-radius: 12px;
@@ -84,7 +86,7 @@
 <body>
   <header>
     <h1><span class="dot">●</span> 每日金价</h1>
-    <button class="refresh" id="refreshBtn" onclick="load()">↻</button>
+    <button class="refresh" id="refreshBtn" onclick="onRefreshClick()">↻</button>
   </header>
 
   <div class="card gold">
@@ -146,12 +148,45 @@ function fmt(n, d = 2) {
   return n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 }
 
+const COOLDOWN = 5;          // 秒：两次手动刷新的最小间隔
+let cooling = false;
+
+// 手动点击：冷却中则忽略，否则刷新并进入 5 秒冷却
+function onRefreshClick() {
+  if (cooling) return;
+  load();
+  startCooldown();
+}
+
+function startCooldown() {
+  const btn = document.getElementById('refreshBtn');
+  cooling = true;
+  btn.disabled = true;
+  btn.classList.add('cooling');
+  let left = COOLDOWN;
+  btn.textContent = left;
+  const timer = setInterval(() => {
+    left--;
+    if (left <= 0) {
+      clearInterval(timer);
+      cooling = false;
+      btn.disabled = false;
+      btn.classList.remove('cooling');
+      btn.textContent = '↻';
+    } else {
+      btn.textContent = left;
+    }
+  }, 1000);
+}
+
 async function load() {
   const btn = document.getElementById('refreshBtn');
-  btn.classList.remove('spin');
-  void btn.offsetWidth;        // 强制重排，让动画每次点击都重新触发
-  btn.classList.add('spin');
-  setTimeout(() => btn.classList.remove('spin'), 600);
+  if (!cooling) {              // 冷却中不转动图标（图标位置在显示倒计时）
+    btn.classList.remove('spin');
+    void btn.offsetWidth;      // 强制重排，让动画每次点击都重新触发
+    btn.classList.add('spin');
+    setTimeout(() => btn.classList.remove('spin'), 600);
+  }
 
   const noCache = { cache: 'no-store' };   // 绕过浏览器缓存，每次都拿最新
   try {
