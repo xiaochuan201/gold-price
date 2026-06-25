@@ -21,8 +21,9 @@ body {
 
 /* 顶部栏 */
 .appbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 10px; }
-.appbar h1 { font-size: 19px; font-weight: 600; display: flex; align-items: center; gap: 7px; }
+.appbar h1 { font-size: 19px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
 .appbar h1 .dot { color: var(--gold); }
+.appbar h1 svg, .tool .icon svg { display: block; }
 .appbar .right { display: flex; align-items: center; gap: 8px; }
 
 /* 返回按钮（工具页用） */

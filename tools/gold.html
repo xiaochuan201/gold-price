@@ -15,6 +15,19 @@
 <body>
   <div class="appbar">
     <a class="back" href="../index.html">← 返回</a>
+    <h1>
+      <svg viewBox="0 0 48 48" width="22" height="22" aria-hidden="true">
+        <defs>
+          <linearGradient id="coinG" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffe79a"/><stop offset="1" stop-color="#dca22a"/>
+          </linearGradient>
+        </defs>
+        <circle cx="24" cy="24" r="18" fill="url(#coinG)"/>
+        <circle cx="24" cy="24" r="13.5" fill="none" stroke="#a9761a" stroke-width="1.6" opacity=".5"/>
+        <text x="24" y="31" text-anchor="middle" font-size="19" font-weight="800" fill="#8a5e12" font-family="-apple-system,sans-serif">¥</text>
+      </svg>
+      每日金价
+    </h1>
     <div class="right">
       <button class="iconbtn" id="refreshBtn">↻</button>
     </div>

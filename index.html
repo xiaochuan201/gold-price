@@ -14,21 +14,51 @@
 </head>
 <body>
   <div class="appbar">
-    <h1><span class="dot">🧰</span> 百宝箱</h1>
+    <h1>
+      <svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true">
+        <defs>
+          <linearGradient id="chestG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffe08a"/><stop offset="1" stop-color="#e0a92e"/>
+          </linearGradient>
+        </defs>
+        <path d="M8 21 Q8 9 24 9 Q40 9 40 21 Z" fill="url(#chestG)"/>
+        <rect x="7" y="20" width="34" height="18" rx="3.5" fill="url(#chestG)"/>
+        <rect x="7" y="20" width="34" height="3.5" fill="#9c6b15"/>
+        <rect x="20" y="20" width="8" height="12" rx="1.5" fill="#9c6b15"/>
+        <circle cx="24" cy="26" r="2.1" fill="#ffe08a"/>
+      </svg>
+      百宝箱
+    </h1>
   </div>
 
   <!-- 工具网格：以后加功能，复制一张 <a class="tool"> 卡片即可 -->
   <div class="tool-grid">
 
     <a class="tool" href="tools/gold.html">
-      <span class="icon">🪙</span>
+      <span class="icon">
+        <svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true">
+          <defs>
+            <linearGradient id="coinG" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ffe79a"/><stop offset="1" stop-color="#dca22a"/>
+            </linearGradient>
+          </defs>
+          <circle cx="24" cy="24" r="18" fill="url(#coinG)"/>
+          <circle cx="24" cy="24" r="13.5" fill="none" stroke="#a9761a" stroke-width="1.6" opacity=".5"/>
+          <text x="24" y="31" text-anchor="middle" font-size="19" font-weight="800" fill="#8a5e12" font-family="-apple-system,sans-serif">¥</text>
+        </svg>
+      </span>
       <span class="name">每日金价</span>
       <span class="desc">国际金价 · 人民币克价 · 汇率</span>
     </a>
 
     <!-- 占位：后续功能（去掉 soon 类、改 href 即可启用） -->
     <div class="tool soon">
-      <span class="icon">➕</span>
+      <span class="icon">
+        <svg viewBox="0 0 48 48" width="32" height="32" aria-hidden="true">
+          <circle cx="24" cy="24" r="17" fill="none" stroke="#8888a0" stroke-width="2.5" stroke-dasharray="4 4"/>
+          <path d="M24 16 V32 M16 24 H32" stroke="#8888a0" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </span>
       <span class="name">更多功能</span>
       <span class="desc">开发中…</span>
     </div>
