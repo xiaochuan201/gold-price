@@ -148,13 +148,16 @@ function fmt(n, d = 2) {
 
 async function load() {
   const btn = document.getElementById('refreshBtn');
+  btn.classList.remove('spin');
+  void btn.offsetWidth;        // 强制重排，让动画每次点击都重新触发
   btn.classList.add('spin');
-  setTimeout(() => btn.classList.remove('spin'), 400);
+  setTimeout(() => btn.classList.remove('spin'), 600);
 
+  const noCache = { cache: 'no-store' };   // 绕过浏览器缓存，每次都拿最新
   try {
     const [goldRes, fxRes] = await Promise.all([
-      fetch('https://api.gold-api.com/price/XAU').then(r => r.json()),
-      fetch('https://open.er-api.com/v6/latest/USD').then(r => r.json())
+      fetch('https://api.gold-api.com/price/XAU', noCache).then(r => r.json()),
+      fetch('https://open.er-api.com/v6/latest/USD', noCache).then(r => r.json())
     ]);
 
     const ozUsd = goldRes.price;              // 美元/盎司
