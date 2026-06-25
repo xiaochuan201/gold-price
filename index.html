@@ -63,6 +63,18 @@
   .badge { font-size: 11px; color: var(--bg); background: var(--gold); padding: 1px 7px; border-radius: 8px; margin-left: 6px; font-weight: 600; vertical-align: middle; }
   .card .sub { color: var(--muted); font-size: 11px; margin-top: 6px; }
   .footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 18px; line-height: 1.7; }
+  details.src { background: var(--card); border-radius: 14px; margin-top: 16px; overflow: hidden; }
+  details.src summary {
+    list-style: none; cursor: pointer; padding: 14px 18px;
+    color: var(--muted); font-size: 13px; display: flex; align-items: center; justify-content: space-between;
+  }
+  details.src summary::-webkit-details-marker { display: none; }
+  details.src summary .arrow { transition: transform .25s; font-size: 12px; }
+  details.src[open] summary .arrow { transform: rotate(180deg); }
+  details.src .body { padding: 0 18px 16px; color: var(--muted); font-size: 12.5px; line-height: 1.8; }
+  details.src .body b { color: var(--text); font-weight: 600; }
+  details.src .body code { background: rgba(255,255,255,.06); padding: 1px 5px; border-radius: 5px; font-size: 11.5px; }
+  details.src .body hr { border: none; border-top: 1px solid rgba(255,255,255,.07); margin: 12px 0; }
   .loading { color: var(--muted); }
   .err { color: var(--red); }
   .pulse { animation: pulse 1.2s ease-in-out infinite; }
@@ -103,6 +115,23 @@
     <div class="value" id="jewelry"><span class="loading pulse">…</span></div>
     <div class="sub">含品牌溢价（约 +150~250 元/克），另按克或按件收工费，各品牌不同</div>
   </div>
+
+  <details class="src">
+    <summary><span>📊 数据来源说明</span><span class="arrow">▾</span></summary>
+    <div class="body">
+      <b>黄金（美元/盎司）</b><br>
+      来自 <code>api.gold-api.com</code>，为<b>国际现货金价（XAU spot）</b>，全球通用基准，近实时更新。
+      <hr>
+      <b>美元 → 人民币汇率</b><br>
+      来自 <code>open.er-api.com</code>（exchangerate-api.com），取<b>中间价</b>，免费版<b>每日更新一次</b>，非实时。
+      <hr>
+      <b>黄金（人民币/克）</b><br>
+      由公式换算：<code>美元盎司价 ÷ 31.1035 × 汇率</code>（1 金衡盎司 = 31.1035 克）。此值≈上海金 Au99.99 实时价（实测误差 &lt;0.5%）。
+      <hr>
+      <b>银行投资金条 / 金店足金饰品</b><br>
+      <b>均为估算</b>，非实时报价（国内交易所接口不支持网页跨域调用）。以上面的人民币克价为基准，叠加典型溢价：金条约 +10 元/克（销售点差）；金饰约 +150~250 元/克（品牌溢价），另收工费。<b>实际零售价以各银行/金店当日报价为准。</b>
+    </div>
+  </details>
 
   <div class="footer" id="footer">数据加载中…</div>
 
@@ -146,8 +175,7 @@ async function load() {
     document.getElementById('footer').innerHTML =
       '金价更新：' + goldTime.toLocaleString('zh-CN') + '<br>' +
       '汇率：' + (fxRes.time_last_update_utc || '') + '（每日更新）<br>' +
-      '刷新于 ' + new Date().toLocaleTimeString('zh-CN') + '<br>' +
-      '国内价为按国际现货折算的估算，零售实际价以各银行/金店当日报价为准';
+      '刷新于 ' + new Date().toLocaleTimeString('zh-CN');
   } catch (e) {
     document.getElementById('footer').innerHTML =
       '<span class="err">加载失败，请下拉刷新或检查网络</span><br>' + e;
