@@ -59,6 +59,9 @@
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .grid .card { margin-bottom: 0; }
   .grid .value { font-size: 26px; }
+  .section-title { color: var(--muted); font-size: 13px; letter-spacing: .5px; margin: 22px 4px 10px; }
+  .badge { font-size: 11px; color: var(--bg); background: var(--gold); padding: 1px 7px; border-radius: 8px; margin-left: 6px; font-weight: 600; vertical-align: middle; }
+  .card .sub { color: var(--muted); font-size: 11px; margin-top: 6px; }
   .footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 18px; line-height: 1.7; }
   .loading { color: var(--muted); }
   .err { color: var(--red); }
@@ -93,10 +96,34 @@
     </div>
   </div>
 
+  <div class="section-title">国内金价 · 参考<span class="badge">估算</span></div>
+
+  <div class="card">
+    <div class="label">国内基准 · 上海金 Au99.99 ≈ 人民币/克</div>
+    <div class="value" id="sge"><span class="loading pulse">…</span></div>
+    <div class="sub">由国际现货价 × 汇率折算，与上海金交易所实时价基本一致（±几元）</div>
+  </div>
+
+  <div class="card">
+    <div class="label">银行投资金条 约</div>
+    <div class="value" id="bankBar"><span class="loading pulse">…</span></div>
+    <div class="sub">在基准价上加约 5~15 元/克的销售点差，回购价更接近基准</div>
+  </div>
+
+  <div class="card">
+    <div class="label">金店足金饰品 约</div>
+    <div class="value" id="jewelry"><span class="loading pulse">…</span></div>
+    <div class="sub">含品牌溢价（约 +150~250 元/克），另按克或按件收工费，各品牌不同</div>
+  </div>
+
   <div class="footer" id="footer">数据加载中…</div>
 
 <script>
 const GRAMS_PER_OZ = 31.1034768; // 1 金衡盎司
+// 国内价相对「国际折算基准价」的典型溢价(元/克)，粗略估算，可自行调整
+const BANK_SPREAD   = 10;   // 银行投资金条销售点差
+const JEWELRY_LOW   = 150;  // 金店足金品牌溢价下限
+const JEWELRY_HIGH  = 250;  // 金店足金品牌溢价上限
 
 function fmt(n, d = 2) {
   return n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -123,11 +150,18 @@ async function load() {
     document.getElementById('fx').innerHTML    = fmt(rate, 4);
     document.getElementById('gUsd').innerHTML  = '$' + fmt(gUsd) + '<span class="unit">/g</span>';
 
+    // 国内参考价：以国际折算的人民币克价为基准
+    const base = gCny;
+    document.getElementById('sge').innerHTML     = '¥' + fmt(base) + '<span class="unit">/g</span>';
+    document.getElementById('bankBar').innerHTML = '¥' + fmt(base + BANK_SPREAD, 0) + '<span class="unit">/g</span>';
+    document.getElementById('jewelry').innerHTML = '¥' + fmt(base + JEWELRY_LOW, 0) + ' ~ ' + fmt(base + JEWELRY_HIGH, 0) + '<span class="unit">/g</span>';
+
     const goldTime = new Date(goldRes.updatedAt);
     document.getElementById('footer').innerHTML =
       '金价更新：' + goldTime.toLocaleString('zh-CN') + '<br>' +
-      '汇率：' + (fxRes.time_last_update_utc || '') + '<br>' +
-      '刷新于 ' + new Date().toLocaleTimeString('zh-CN');
+      '汇率：' + (fxRes.time_last_update_utc || '') + '（每日更新）<br>' +
+      '刷新于 ' + new Date().toLocaleTimeString('zh-CN') + '<br>' +
+      '国内价为按国际现货折算的估算，零售实际价以各银行/金店当日报价为准';
   } catch (e) {
     document.getElementById('footer').innerHTML =
       '<span class="err">加载失败，请下拉刷新或检查网络</span><br>' + e;
