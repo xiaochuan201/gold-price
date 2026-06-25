@@ -5,227 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#1a1a2e">
+<meta name="theme-color" content="#14141f">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>每日金价</title>
-<style>
-  :root {
-    --bg: #14141f;
-    --card: #1e1e2e;
-    --gold: #f0c14b;
-    --green: #3ecf8e;
-    --red: #ff6b6b;
-    --text: #e8e8ee;
-    --muted: #8888a0;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif;
-    min-height: 100vh;
-    padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
-    padding-top: calc(12px + env(safe-area-inset-top));
-  }
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  h1 { font-size: 19px; font-weight: 600; }
-  h1 .dot { color: var(--gold); }
-  .refresh {
-    background: var(--card);
-    border: none;
-    color: var(--text);
-    width: 34px; height: 34px;
-    border-radius: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: transform .4s;
-  }
-  .refresh.spin { transform: rotate(360deg); }
-  .refresh:disabled { opacity: .45; cursor: default; }
-  .refresh.cooling { font-size: 13px; font-weight: 600; }
-  .card {
-    background: var(--card);
-    border-radius: 12px;
-    padding: 12px 14px;
-    margin-bottom: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,.2);
-  }
-  .card .label { color: var(--muted); font-size: 12px; margin-bottom: 4px; letter-spacing: .3px; }
-  .card .value { font-size: 26px; font-weight: 700; line-height: 1.1; }
-  .card .value .unit { font-size: 14px; color: var(--muted); font-weight: 500; margin-left: 3px; }
-  .card.gold .value { color: var(--gold); }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .grid .card { margin-bottom: 0; }
-  .grid .value { font-size: 22px; }
-  .section-title { color: var(--muted); font-size: 12px; letter-spacing: .3px; margin: 12px 4px 6px; }
-  .badge { font-size: 10px; color: var(--bg); background: var(--gold); padding: 1px 6px; border-radius: 7px; margin-left: 6px; font-weight: 600; vertical-align: middle; }
-  .card .sub { color: var(--muted); font-size: 10.5px; margin-top: 4px; line-height: 1.5; }
-  .footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 12px; line-height: 1.6; }
-  details.src { background: var(--card); border-radius: 12px; margin-top: 10px; overflow: hidden; }
-  details.src summary {
-    list-style: none; cursor: pointer; padding: 11px 14px;
-    color: var(--muted); font-size: 12.5px; display: flex; align-items: center; justify-content: space-between;
-  }
-  details.src summary::-webkit-details-marker { display: none; }
-  details.src summary .arrow { transition: transform .25s; font-size: 12px; }
-  details.src[open] summary .arrow { transform: rotate(180deg); }
-  details.src .body { padding: 0 14px 12px; color: var(--muted); font-size: 12px; line-height: 1.7; }
-  details.src .body b { color: var(--text); font-weight: 600; }
-  details.src .body code { background: rgba(255,255,255,.06); padding: 1px 5px; border-radius: 5px; font-size: 11.5px; }
-  details.src .body hr { border: none; border-top: 1px solid rgba(255,255,255,.07); margin: 12px 0; }
-  .loading { color: var(--muted); }
-  .err { color: var(--red); }
-  .pulse { animation: pulse 1.2s ease-in-out infinite; }
-  @keyframes pulse { 0%,100% { opacity:.4 } 50% { opacity:1 } }
-</style>
+<title>百宝箱</title>
+<link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-  <header>
-    <h1><span class="dot">●</span> 每日金价</h1>
-    <button class="refresh" id="refreshBtn" onclick="onRefreshClick()">↻</button>
-  </header>
-
-  <div class="card gold">
-    <div class="label">黄金 · 美元/盎司</div>
-    <div class="value" id="ozUsd"><span class="loading pulse">加载中…</span></div>
+  <div class="appbar">
+    <h1><span class="dot">🧰</span> 百宝箱</h1>
   </div>
 
-  <div class="card gold">
-    <div class="label">黄金 · 人民币/克</div>
-    <div class="value" id="gCny"><span class="loading pulse">加载中…</span></div>
-  </div>
+  <!-- 工具网格：以后加功能，复制一张 <a class="tool"> 卡片即可 -->
+  <div class="tool-grid">
 
-  <div class="card">
-    <div class="label">美元 → 人民币</div>
-    <div class="value" id="fx"><span class="loading pulse">…</span></div>
-  </div>
+    <a class="tool" href="tools/gold.html">
+      <span class="icon">🪙</span>
+      <span class="name">每日金价</span>
+      <span class="desc">国际金价 · 人民币克价 · 汇率</span>
+    </a>
 
-  <div class="section-title">国内金价 · 参考<span class="badge">估算</span></div>
-
-  <div class="card">
-    <div class="label">银行投资金条 约</div>
-    <div class="value" id="bankBar"><span class="loading pulse">…</span></div>
-    <div class="sub">在基准价上加约 5~15 元/克的销售点差，回购价更接近基准</div>
-  </div>
-
-  <div class="card">
-    <div class="label">金店足金饰品 约</div>
-    <div class="value" id="jewelry"><span class="loading pulse">…</span></div>
-    <div class="sub">含品牌溢价（约 +150~250 元/克），另按克或按件收工费，各品牌不同</div>
-  </div>
-
-  <details class="src">
-    <summary><span>📊 数据来源说明</span><span class="arrow">▾</span></summary>
-    <div class="body">
-      <b>黄金（美元/盎司）</b><br>
-      来自 <code>api.gold-api.com</code>，为<b>国际现货金价（XAU spot）</b>，全球通用基准，近实时更新。
-      <hr>
-      <b>美元 → 人民币汇率</b><br>
-      来自 <code>open.er-api.com</code>（exchangerate-api.com），取<b>中间价</b>，免费版<b>每日更新一次</b>，非实时。
-      <hr>
-      <b>黄金（人民币/克）</b><br>
-      由公式换算：<code>美元盎司价 ÷ 31.1035 × 汇率</code>（1 金衡盎司 = 31.1035 克）。此值≈上海金 Au99.99 实时价（实测误差 &lt;0.5%）。
-      <hr>
-      <b>银行投资金条 / 金店足金饰品</b><br>
-      <b>均为估算</b>，非实时报价（国内交易所接口不支持网页跨域调用）。以上面的人民币克价为基准，叠加典型溢价：金条约 +10 元/克（销售点差）；金饰约 +150~250 元/克（品牌溢价），另收工费。<b>实际零售价以各银行/金店当日报价为准。</b>
+    <!-- 占位：后续功能（去掉 soon 类、改 href 即可启用） -->
+    <div class="tool soon">
+      <span class="icon">➕</span>
+      <span class="name">更多功能</span>
+      <span class="desc">开发中…</span>
     </div>
-  </details>
 
-  <div class="footer" id="footer">数据加载中…</div>
+  </div>
 
-<script>
-const GRAMS_PER_OZ = 31.1034768; // 1 金衡盎司
-// 国内价相对「国际折算基准价」的典型溢价(元/克)，粗略估算，可自行调整
-const BANK_SPREAD   = 10;   // 银行投资金条销售点差
-const JEWELRY_LOW   = 150;  // 金店足金品牌溢价下限
-const JEWELRY_HIGH  = 250;  // 金店足金品牌溢价上限
-
-function fmt(n, d = 2) {
-  return n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
-}
-
-const COOLDOWN = 5;          // 秒：两次手动刷新的最小间隔
-let cooling = false;
-
-// 手动点击：冷却中则忽略，否则刷新并进入 5 秒冷却
-function onRefreshClick() {
-  if (cooling) return;
-  load();
-  startCooldown();
-}
-
-function startCooldown() {
-  const btn = document.getElementById('refreshBtn');
-  cooling = true;
-  btn.disabled = true;
-  btn.classList.add('cooling');
-  let left = COOLDOWN;
-  btn.textContent = left;
-  const timer = setInterval(() => {
-    left--;
-    if (left <= 0) {
-      clearInterval(timer);
-      cooling = false;
-      btn.disabled = false;
-      btn.classList.remove('cooling');
-      btn.textContent = '↻';
-    } else {
-      btn.textContent = left;
-    }
-  }, 1000);
-}
-
-async function load() {
-  const btn = document.getElementById('refreshBtn');
-  if (!cooling) {              // 冷却中不转动图标（图标位置在显示倒计时）
-    btn.classList.remove('spin');
-    void btn.offsetWidth;      // 强制重排，让动画每次点击都重新触发
-    btn.classList.add('spin');
-    setTimeout(() => btn.classList.remove('spin'), 600);
-  }
-
-  const noCache = { cache: 'no-store' };   // 绕过浏览器缓存，每次都拿最新
-  try {
-    const [goldRes, fxRes] = await Promise.all([
-      fetch('https://api.gold-api.com/price/XAU', noCache).then(r => r.json()),
-      fetch('https://open.er-api.com/v6/latest/USD', noCache).then(r => r.json())
-    ]);
-
-    const ozUsd = goldRes.price;              // 美元/盎司
-    const rate  = fxRes.rates.CNY;            // 1 美元 = ? 人民币
-    const gUsd  = ozUsd / GRAMS_PER_OZ;       // 美元/克
-    const gCny  = gUsd * rate;                // 人民币/克
-
-    document.getElementById('ozUsd').innerHTML = '$' + fmt(ozUsd) + '<span class="unit">/oz</span>';
-    document.getElementById('gCny').innerHTML  = '¥' + fmt(gCny) + '<span class="unit">/g</span>';
-    document.getElementById('fx').innerHTML    = fmt(rate, 4);
-
-    // 国内参考价：以国际折算的人民币克价为基准
-    const base = gCny;
-    document.getElementById('bankBar').innerHTML = '¥' + fmt(base + BANK_SPREAD, 0) + '<span class="unit">/g</span>';
-    document.getElementById('jewelry').innerHTML = '¥' + fmt(base + JEWELRY_LOW, 0) + ' ~ ' + fmt(base + JEWELRY_HIGH, 0) + '<span class="unit">/g</span>';
-
-    const goldTime = new Date(goldRes.updatedAt);
-    document.getElementById('footer').innerHTML =
-      '金价更新：' + goldTime.toLocaleString('zh-CN') + '<br>' +
-      '汇率：' + (fxRes.time_last_update_utc || '') + '（每日更新）<br>' +
-      '刷新于 ' + new Date().toLocaleTimeString('zh-CN');
-  } catch (e) {
-    document.getElementById('footer').innerHTML =
-      '<span class="err">加载失败，请下拉刷新或检查网络</span><br>' + e;
-  }
-}
-
-load();
-// 页面重新可见时自动刷新（比如从后台切回来）
-document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
-</script>
+  <div class="footer">点开卡片使用对应功能 · 数据仅供参考</div>
 </body>
 </html>

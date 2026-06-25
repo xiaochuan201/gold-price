@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#14141f">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>每日金价 · 百宝箱</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="appbar">
+    <a class="back" href="../index.html">← 返回</a>
+    <div class="right">
+      <button class="iconbtn" id="refreshBtn">↻</button>
+    </div>
+  </div>
+
+  <div class="card gold">
+    <div class="label">黄金 · 美元/盎司</div>
+    <div class="value" id="ozUsd"><span class="loading pulse">加载中…</span></div>
+  </div>
+
+  <div class="card gold">
+    <div class="label">黄金 · 人民币/克</div>
+    <div class="value" id="gCny"><span class="loading pulse">加载中…</span></div>
+  </div>
+
+  <div class="card">
+    <div class="label">美元 → 人民币</div>
+    <div class="value" id="fx"><span class="loading pulse">…</span></div>
+  </div>
+
+  <div class="section-title">国内金价 · 参考<span class="badge">估算</span></div>
+
+  <div class="card">
+    <div class="label">银行投资金条 约</div>
+    <div class="value" id="bankBar"><span class="loading pulse">…</span></div>
+    <div class="sub">在基准价上加约 5~15 元/克的销售点差，回购价更接近基准</div>
+  </div>
+
+  <div class="card">
+    <div class="label">金店足金饰品 约</div>
+    <div class="value" id="jewelry"><span class="loading pulse">…</span></div>
+    <div class="sub">含品牌溢价（约 +150~250 元/克），另按克或按件收工费，各品牌不同</div>
+  </div>
+
+  <details class="src">
+    <summary><span>📊 数据来源说明</span><span class="arrow">▾</span></summary>
+    <div class="body">
+      <b>黄金（美元/盎司）</b><br>
+      来自 <code>api.gold-api.com</code>，为<b>国际现货金价（XAU spot）</b>，全球通用基准，近实时更新。
+      <hr>
+      <b>美元 → 人民币汇率</b><br>
+      来自 <code>open.er-api.com</code>（exchangerate-api.com），取<b>中间价</b>，免费版<b>每日更新一次</b>，非实时。
+      <hr>
+      <b>黄金（人民币/克）</b><br>
+      由公式换算：<code>美元盎司价 ÷ 31.1035 × 汇率</code>（1 金衡盎司 = 31.1035 克）。此值≈上海金 Au99.99 实时价（实测误差 &lt;0.5%）。
+      <hr>
+      <b>银行投资金条 / 金店足金饰品</b><br>
+      <b>均为估算</b>，非实时报价（国内交易所接口不支持网页跨域调用）。以上面的人民币克价为基准，叠加典型溢价：金条约 +10 元/克（销售点差）；金饰约 +150~250 元/克（品牌溢价），另收工费。<b>实际零售价以各银行/金店当日报价为准。</b>
+    </div>
+  </details>
+
+  <div class="footer" id="footer">数据加载中…</div>
+
+<script src="../assets/common.js"></script>
+<script>
+const GRAMS_PER_OZ = 31.1034768; // 1 金衡盎司
+// 国内价相对「国际折算基准价」的典型溢价(元/克)，粗略估算，可自行调整
+const BANK_SPREAD  = 10;   // 银行投资金条销售点差
+const JEWELRY_LOW  = 150;  // 金店足金品牌溢价下限
+const JEWELRY_HIGH = 250;  // 金店足金品牌溢价上限
+
+async function load() {
+  try {
+    const [goldRes, fxRes] = await Promise.all([
+      jget('https://api.gold-api.com/price/XAU'),
+      jget('https://open.er-api.com/v6/latest/USD')
+    ]);
+
+    const ozUsd = goldRes.price;              // 美元/盎司
+    const rate  = fxRes.rates.CNY;            // 1 美元 = ? 人民币
+    const gCny  = ozUsd / GRAMS_PER_OZ * rate; // 人民币/克
+
+    document.getElementById('ozUsd').innerHTML = '$' + fmt(ozUsd) + '<span class="unit">/oz</span>';
+    document.getElementById('gCny').innerHTML  = '¥' + fmt(gCny) + '<span class="unit">/g</span>';
+    document.getElementById('fx').innerHTML    = fmt(rate, 4);
+
+    // 国内参考价：以国际折算的人民币克价为基准
+    const base = gCny;
+    document.getElementById('bankBar').innerHTML = '¥' + fmt(base + BANK_SPREAD, 0) + '<span class="unit">/g</span>';
+    document.getElementById('jewelry').innerHTML = '¥' + fmt(base + JEWELRY_LOW, 0) + ' ~ ' + fmt(base + JEWELRY_HIGH, 0) + '<span class="unit">/g</span>';
+
+    const goldTime = new Date(goldRes.updatedAt);
+    document.getElementById('footer').innerHTML =
+      '金价更新：' + goldTime.toLocaleString('zh-CN') + '<br>' +
+      '汇率：' + (fxRes.time_last_update_utc || '') + '（每日更新）<br>' +
+      '刷新于 ' + new Date().toLocaleTimeString('zh-CN');
+  } catch (e) {
+    document.getElementById('footer').innerHTML =
+      '<span class="err">加载失败，请稍后重试或检查网络</span><br>' + e;
+  }
+}
+
+makeCooldownButton('refreshBtn', load, 5);   // 刷新按钮 + 5 秒冷却
+load();
+document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!--
+  新工具模板 —— 加功能时的步骤：
+  1. 复制本文件为 tools/你的功能.html
+  2. 改 <title>、标题文字、下面的内容和脚本
+  3. 在 ../index.html 的工具网格里加一张卡片：
+       <a class="tool" href="tools/你的功能.html">
+         <span class="icon">🔧</span>
+         <span class="name">功能名</span>
+         <span class="desc">一句话说明</span>
+       </a>
+  4. 跑 ~/gold-price/deploy.sh "新增XX功能" 上线
+  共享函数（在 ../assets/common.js 里）：fmt(数字,小数位)、jget(网址)、makeCooldownButton(按钮id, 刷新函数, 秒数)
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#14141f">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>新功能 · 百宝箱</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="appbar">
+    <a class="back" href="../index.html">← 返回</a>
+    <div class="right">
+      <!-- 需要刷新按钮就保留，不需要可删掉 -->
+      <button class="iconbtn" id="refreshBtn">↻</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label">示例数据</div>
+    <div class="value" id="demo"><span class="loading pulse">加载中…</span></div>
+  </div>
+
+  <div class="footer" id="footer"></div>
+
+<script src="../assets/common.js"></script>
+<script>
+async function load() {
+  try {
+    // 在这里写你的逻辑，例如：
+    // const data = await jget('https://某个接口');
+    document.getElementById('demo').textContent = '这里显示结果';
+    document.getElementById('footer').textContent = '刷新于 ' + new Date().toLocaleTimeString('zh-CN');
+  } catch (e) {
+    document.getElementById('footer').innerHTML = '<span class="err">加载失败</span><br>' + e;
+  }
+}
+
+makeCooldownButton('refreshBtn', load, 5);
+load();
+document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+</script>
+</body>
+</html>
